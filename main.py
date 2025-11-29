@@ -84,6 +84,41 @@ DEFAULT_OUTPUT_FILE = 'random_output.bin'
 HISTOGRAM_OUTPUT = 'validation_histogram.png'
 BITMAP_OUTPUT = 'validation_bitmap.png'
 
+import gc # Add this at the top with other imports
+
+def generate_random_data(size_bytes: int) -> bytes:
+    """
+    Generate random data in memory-safe chunks to prevent MemoryError.
+    """
+    print(f"Generating {size_bytes:,} bytes of random data...")
+    
+    # Chunk size: 1 MB (Safe for almost any laptop)
+    CHUNK_SIZE = 1024 * 1024 
+    
+    final_buffer = bytearray()
+    generated_so_far = 0
+    
+    with create_entropy_engine() as engine:
+        while generated_so_far < size_bytes:
+            # Calculate how much to generate this round
+            remaining = size_bytes - generated_so_far
+            current_chunk_size = min(CHUNK_SIZE, remaining)
+            
+            # Generate the small chunk
+            chunk = engine.generate_random_bytes(current_chunk_size)
+            final_buffer.extend(chunk)
+            
+            generated_so_far += len(chunk)
+            
+            # Progress Report
+            percent = (generated_so_far / size_bytes) * 100
+            print(f"   Progress: {percent:.1f}% ({generated_so_far:,} bytes) - RAM Cleanup...")
+            
+            # CRITICAL: Force Python to clean up the discarded video frames immediately
+            gc.collect()
+
+    print(f"Generated {len(final_buffer):,} bytes successfully.")
+    return bytes(final_buffer)
 
 def generate_random_data(size_bytes: int) -> bytes:
     """
