@@ -1,0 +1,7 @@
+# Dependencies for Python TRNG (True Random Number Generator)
+# Uses quantum shot noise (webcam) and thermal noise (microphone) as entropy sources
+
+opencv-python>=4.8.0  # cv2 - Webcam capture for quantum shot noise harvesting
+PyAudio>=0.2.13       # Microphone capture for thermal/Johnson-Nyquist noise harvesting
+numpy>=1.24.0         # Numerical operations for entropy mixing
+matplotlib>=3.7.0     # Visualization for randomness validation (histogram + bitmap plots)
